@@ -2,9 +2,9 @@ pipeline{
     agent any
 
     stages{
-        stage("Hello"){
+        stage("Build"){
             steps{
-                echo "Hello World"
+                git "https://github.com/mbedia94/unir-cp1.git"
             }
         }
     }
