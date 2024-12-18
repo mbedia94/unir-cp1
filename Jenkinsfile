@@ -29,18 +29,22 @@ pipeline{
             parallel{
                 stage("Unit"){
                     steps{
-                        sh 'PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit'
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE'){
+                            sh 'PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit'
+                        }
                     }
                 }
         
                 stage("Rest"){
                     steps{
-                        sh '''
-                            export FLASK_APP=app.api
-                            flask run &
-                            sleep 5
-                            PYTHONPATH=$(pwd) pytest --junitxml=result-rest.xml test/rest 
-                        '''
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE'){
+                            sh '''
+                                export FLASK_APP=app.api
+                                flask run &
+                                sleep 5
+                                PYTHONPATH=$(pwd) pytest --junitxml=result-rest.xml test/rest 
+                            '''
+                        }
                     }
                 }
             }
