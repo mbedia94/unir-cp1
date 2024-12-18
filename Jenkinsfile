@@ -49,6 +49,7 @@ pipeline{
         stage("Results"){
             steps{
                 junit 'result*.xml'
+                echo "Resultados de los tests grabados correctamente."
             }
         }
     }
