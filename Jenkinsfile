@@ -11,7 +11,13 @@ pipeline{
         stage("Build"){
             steps{
                 echo "Nada a compilar"
-                ls -la
+                sh "ls -la"
+            }
+        }
+
+        stage("Unit"){
+            steps{
+                sh "PYTHONPATH=$(pwd) pytest test/unit"
             }
         }
     }
