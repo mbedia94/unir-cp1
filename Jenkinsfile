@@ -1,23 +1,27 @@
-pipeline{
+pipeline {
     agent any
 
-    stages{
-        stage("GetCode"){
-            steps{
+    stages {
+        stage("GetCode") {
+            steps {
                 git "https://github.com/mbedia94/unir-cp1.git"
             }
         }
 
-        stage("Build"){
-            steps{
+        stage("Build") {
+            steps {
                 echo "Nada a compilar"
-                sh "ls -la"
+                script {
+                    sh 'ls -la'
+                }
             }
         }
 
-        stage("Unit"){
-            steps{
-                sh "PYTHONPATH=$(pwd) pytest test/unit"
+        stage("Unit") {
+            steps {
+                script {
+                    sh 'PYTHONPATH=$(pwd) pytest test/unit'
+                }
             }
         }
     }
