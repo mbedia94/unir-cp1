@@ -1,21 +1,26 @@
 pipeline {
     agent none
 
+    options {
+        disableConcurrentBuilds()
+        skipDefaultCheckout()
+    }
+
     stages {
         stage('GetCode') {
-            agent { label 'main-agent' }
+            agent { label 'main-agent' } // Agente principal con 4 ejecutores
             steps {
+                checkout scm
                 sh '''
                     whoami
                     hostname
                     echo ${WORKSPACE}
                 '''
-                git 'https://github.com/mbedia94/unir-cp1.git'
             }
         }
 
         stage('Setup') {
-            agent { label 'main-agent' }
+            agent { label 'main-agent' } // Agente principal con 4 ejecutores
             steps {
                 sh '''
                     whoami
@@ -34,22 +39,22 @@ pipeline {
                 stage('Unit') {
                     agent { label 'test-agent' }
                     steps {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            sh '''
-                                whoami
-                                hostname
-                                echo ${WORKSPACE}
-                                . unir/bin/activate
-                                PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit
-                            '''
-                            junit 'result*.xml'
-                        }
+                        checkout scm
+                        sh '''
+                            whoami
+                            hostname
+                            echo ${WORKSPACE}
+                            . unir/bin/activate
+                            PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit
+                        '''
+                        junit 'result*.xml'
                     }
                 }
 
                 stage('Coverage') {
                     agent { label 'test-agent' }
                     steps {
+                        checkout scm
                         sh '''
                             whoami
                             hostname
@@ -69,6 +74,7 @@ pipeline {
                 stage('Static') {
                     agent { label 'test-agent' }
                     steps {
+                        checkout scm
                         sh '''
                             whoami
                             hostname
@@ -87,6 +93,7 @@ pipeline {
                 stage('Security') {
                     agent { label 'test-agent' }
                     steps {
+                        checkout scm
                         sh '''
                             whoami
                             hostname
@@ -107,6 +114,7 @@ pipeline {
         stage('Performance') {
             agent { label 'perf-agent' }
             steps {
+                checkout scm
                 sh '''
                     whoami
                     hostname
