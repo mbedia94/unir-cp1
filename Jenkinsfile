@@ -8,7 +8,7 @@ pipeline {
 
     stages {
         stage('GetCode') {
-            agent { label 'main-agent' } // Agente principal con 4 ejecutores
+            agent { label 'main-agent' }
             steps {
                 checkout scm
                 sh '''
@@ -20,7 +20,7 @@ pipeline {
         }
 
         stage('Setup') {
-            agent { label 'main-agent' } // Agente principal con 4 ejecutores
+            agent { label 'main-agent' }
             steps {
                 sh '''
                     whoami
@@ -44,7 +44,10 @@ pipeline {
                             whoami
                             hostname
                             echo ${WORKSPACE}
+                            python3 -m venv unir
                             . unir/bin/activate
+                            pip install --upgrade pip
+                            pip install -r requirements.txt
                             PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit
                         '''
                         junit 'result*.xml'
@@ -59,7 +62,10 @@ pipeline {
                             whoami
                             hostname
                             echo ${WORKSPACE}
+                            python3 -m venv unir
                             . unir/bin/activate
+                            pip install --upgrade pip
+                            pip install -r requirements.txt
                             coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest test/unit
                             coverage xml
                         '''
@@ -79,7 +85,10 @@ pipeline {
                             whoami
                             hostname
                             echo ${WORKSPACE}
+                            python3 -m venv unir
                             . unir/bin/activate
+                            pip install --upgrade pip
+                            pip install -r requirements.txt
                             flake8 --exit-zero --format=pylint app > flake8.out
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
@@ -98,7 +107,10 @@ pipeline {
                             whoami
                             hostname
                             echo ${WORKSPACE}
+                            python3 -m venv unir
                             . unir/bin/activate
+                            pip install --upgrade pip
+                            pip install -r requirements.txt
                             bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}] {msg}"
                         '''
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')], 
