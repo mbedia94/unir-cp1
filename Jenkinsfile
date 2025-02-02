@@ -1,16 +1,26 @@
 pipeline {
-    agent any
+    agent none
 
     stages {
         stage('GetCode') {
+            agent { label 'main-agent' }
             steps {
+                sh '''
+                    whoami
+                    hostname
+                    echo ${WORKSPACE}
+                '''
                 git 'https://github.com/mbedia94/unir-cp1.git'
             }
         }
 
         stage('Setup') {
+            agent { label 'main-agent' }
             steps {
                 sh '''
+                    whoami
+                    hostname
+                    echo ${WORKSPACE}
                     python3 -m venv unir
                     . unir/bin/activate
                     pip install --upgrade pip
@@ -20,11 +30,15 @@ pipeline {
         }
 
         stage('Tests') {
+            agent { label 'test-agent' }
             parallel {
                 stage('Unit') {
                     steps {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             sh '''
+                                whoami
+                                hostname
+                                echo ${WORKSPACE}
                                 . unir/bin/activate
                                 PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit
                             '''
@@ -36,6 +50,9 @@ pipeline {
                 stage('Coverage') {
                     steps {
                         sh '''
+                            whoami
+                            hostname
+                            echo ${WORKSPACE}
                             . unir/bin/activate
                             coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest test/unit
                             coverage xml
@@ -51,6 +68,9 @@ pipeline {
                 stage('Static') {
                     steps {
                         sh '''
+                            whoami
+                            hostname
+                            echo ${WORKSPACE}
                             . unir/bin/activate
                             flake8 --exit-zero --format=pylint app > flake8.out
                         '''
@@ -65,6 +85,9 @@ pipeline {
                 stage('Security') {
                     steps {
                         sh '''
+                            whoami
+                            hostname
+                            echo ${WORKSPACE}
                             . unir/bin/activate
                             bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}] {msg}"
                         '''
@@ -75,15 +98,19 @@ pipeline {
                             ]
                     }
                 }
+            }
+        }
 
-                stage('Performance') {
-                    steps {
-                        sh '''
-                            jmeter -n -t unir.jmx -f -l flask.jtl
-                        '''
-                        perfReport sourceDataFiles: 'flask.jtl'
-                    }
-                }
+        stage('Performance') {
+            agent { label 'perf-agent' }
+            steps {
+                sh '''
+                    whoami
+                    hostname
+                    echo ${WORKSPACE}
+                    jmeter -n -t unir.jmx -f -l flask.jtl
+                '''
+                perfReport sourceDataFiles: 'flask.jtl'
             }
         }
     }
