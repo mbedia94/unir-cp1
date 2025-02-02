@@ -52,13 +52,26 @@ pipeline {
                     steps {
                         sh '''
                             . unir/bin/activate
-                            flake8 --format=pylint app > flake8.out
-                            cat flake8.out
+                            flake8 --exit-zero --format=pylint app > flake8.out
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
                             qualityGates: [
                                 [threshold: 10, type: 'TOTAL', unstable: true], 
-                                [threshold: 11, type: 'TOTAL', unstable: true]
+                                [threshold: 11, type: 'TOTAL', unstable: false]
+                            ]
+                    }
+                }
+
+                stage('Security') {
+                    steps {
+                        sh '''
+                            . unir/bin/activate
+                            bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}] {msg}"
+                        '''
+                        recordIssues tools: [pylint(name: 'Bandit', pattern: 'bandit.out')], 
+                            qualityGates: [
+                                [threshold: 4, type: 'TOTAL', unstable: true], 
+                                [threshold: 2, type: 'TOTAL', unstable: false]
                             ]
                     }
                 }
