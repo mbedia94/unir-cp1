@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                     python3 -m venv unir
-                    source unir/bin/activate
+                    . unir/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
@@ -25,7 +25,7 @@ pipeline {
                     steps {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             sh '''
-                                source unir/bin/activate
+                                . unir/bin/activate
                                 PYTHONPATH=$(pwd) pytest --junitxml=result-unit.xml test/unit
                             '''
                             junit 'result*.xml'
@@ -36,7 +36,7 @@ pipeline {
                 stage('Coverage') {
                     steps {
                         sh '''
-                            source unir/bin/activate
+                            . unir/bin/activate
                             coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest test/unit
                             coverage xml
                         '''
@@ -49,7 +49,7 @@ pipeline {
                 stage('Static') {
                     steps {
                         sh '''
-                            source unir/bin/activate
+                            . unir/bin/activate
                             flake8 --format=pylint app > flake8.out
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
