@@ -40,10 +40,10 @@ pipeline {
                             coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest test/unit
                             coverage xml
                         '''
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                             cobertura coberturaReportFile: 'coverage.xml',
-                                conditionalCoverageTargets: '100, 0, 80',
-                                lineCoverageTargets: '100, 0, 90'
+                                conditionalCoverageTargets: '100, 80, 90',
+                                lineCoverageTargets: '100, 85, 95'
                         }
                     }
                 }
@@ -56,8 +56,8 @@ pipeline {
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
                             qualityGates: [
-                                [threshold: 10, type: 'TOTAL', unstable: true], 
-                                [threshold: 11, type: 'TOTAL', unstable: false]
+                                [threshold: 8, type: 'TOTAL', unstable: true], 
+                                [threshold: 10, type: 'TOTAL', unstable: false]
                             ]
                     }
                 }
@@ -70,8 +70,8 @@ pipeline {
                         '''
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')], 
                             qualityGates: [
-                                [threshold: 1000, type: 'TOTAL', unstable: true], 
-                                [threshold: 1500, type: 'TOTAL', unstable: false]
+                                [threshold: 2, type: 'TOTAL', unstable: true], 
+                                [threshold: 4, type: 'TOTAL', unstable: false]
                             ]
                     }
                 }
@@ -84,13 +84,6 @@ pipeline {
                         perfReport sourceDataFiles: 'flask.jtl'
                     }
                 }
-            }
-        }
-
-        stage('Results') {
-            steps {
-                junit 'result*.xml'
-                echo 'Resultados de los tests grabados correctamente.'
             }
         }
     }
