@@ -79,7 +79,7 @@ pipeline {
                 stage('Performance') {
                     steps {
                         sh '''
-                            jmeter -n -t examples/unir.jmx -f -l flask.jtl
+                            jmeter -n -t /opt/apache-jmeter/bin/examples/unir.jmx -f -l flask.jtl
                         '''
                         perfReport sourceDataFiles: 'flask.jtl'
                     }
