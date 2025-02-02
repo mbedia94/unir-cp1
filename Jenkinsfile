@@ -79,7 +79,7 @@ pipeline {
                 stage('Performance') {
                     steps {
                         sh '''
-                            /home/miquel/Descargas/apache-jmeter-5.6.3_bo/bin/jmeter -n -t /home/miquel/Descargas/apache-jmeter-5.6.3_bo/bin/examples/unir.jmx -f -l flask.jtl
+                            /home/miquel/Descargas/apache-jmeter-5.6.3_bo/bin/jmeter -n -t /home/miquel/Descargas/apache-jmeter-5.6.3_bo/bin/examples/unir.jmx -f -l /home/miquel/Descargas/apache-jmeter-5.6.3_bo/bin/examples/flask.jtl
                         '''
                         perfReport sourceDataFiles: 'flask.jtl'
                     }
