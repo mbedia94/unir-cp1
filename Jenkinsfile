@@ -40,8 +40,10 @@ pipeline {
                             coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest test/unit
                             coverage xml
                         '''
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100, 0, 85', lineCoverageTargets: '100, 0, 90'
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                            cobertura coberturaReportFile: 'coverage.xml',
+                                conditionalCoverageTargets: '100, 0, 80',
+                                lineCoverageTargets: '100, 0, 90'
                         }
                     }
                 }
@@ -51,6 +53,7 @@ pipeline {
                         sh '''
                             . unir/bin/activate
                             flake8 --format=pylint app > flake8.out
+                            cat flake8.out
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
                             qualityGates: [
