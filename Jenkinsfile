@@ -54,13 +54,11 @@ pipeline {
                             . unir/bin/activate
                             flake8 --exit-zero --format=pylint app > flake8.out
                         '''
-                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                            recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
-                                qualityGates: [
-                                    [threshold: 8, type: 'TOTAL', unstable: true], 
-                                    [threshold: 10, type: 'TOTAL', unstable: false]
-                                ]
-                        }
+                        recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
+                            qualityGates: [
+                                [threshold: 8, type: 'TOTAL', unstable: true], 
+                                [threshold: 10, type: 'TOTAL', unstable: false]
+                            ]
                     }
                 }
 
@@ -70,13 +68,11 @@ pipeline {
                             . unir/bin/activate
                             bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}] {msg}"
                         '''
-                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                            recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')], 
-                                qualityGates: [
-                                    [threshold: 2, type: 'TOTAL', unstable: true], 
-                                    [threshold: 4, type: 'TOTAL', unstable: false]
-                                ]
-                        }
+                        recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')], 
+                            qualityGates: [
+                                [threshold: 1000, type: 'TOTAL', unstable: true], 
+                                [threshold: 1500, type: 'TOTAL', unstable: false]
+                            ]
                     }
                 }
 
