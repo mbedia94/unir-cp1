@@ -35,7 +35,7 @@ pipeline {
                         sh '''
                             flake8 --format=pylint app > flake8.out
                         '''
-                        recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 10, type: 'TOTAL', unstable: true], threshold: 11, type: 'TOTAL', unstable: true]
+                        recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 10, type: 'TOTAL', unstable: true], [threshold: 11, type: 'TOTAL', unstable: true]]
                     }
                 }
             }
