@@ -68,7 +68,7 @@ pipeline {
                             . unir/bin/activate
                             bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}] {msg}"
                         '''
-                        recordIssues tools: [pylint(name: 'Bandit', pattern: 'bandit.out')], 
+                        recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')], 
                             qualityGates: [
                                 [threshold: 4, type: 'TOTAL', unstable: true], 
                                 [threshold: 2, type: 'TOTAL', unstable: false]
