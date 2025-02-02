@@ -30,9 +30,9 @@ pipeline {
         }
 
         stage('Tests') {
-            agent { label 'test-agent' }
             parallel {
                 stage('Unit') {
+                    agent { label 'test-agent' }
                     steps {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             sh '''
@@ -48,6 +48,7 @@ pipeline {
                 }
 
                 stage('Coverage') {
+                    agent { label 'test-agent' }
                     steps {
                         sh '''
                             whoami
@@ -66,6 +67,7 @@ pipeline {
                 }
 
                 stage('Static') {
+                    agent { label 'test-agent' }
                     steps {
                         sh '''
                             whoami
@@ -83,6 +85,7 @@ pipeline {
                 }
 
                 stage('Security') {
+                    agent { label 'test-agent' }
                     steps {
                         sh '''
                             whoami
